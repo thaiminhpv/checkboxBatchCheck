@@ -23,10 +23,12 @@ function clearAnswer(checkboxs) {
         }
     });
 }
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+const intervalChecking = 1000 * 60;
 async function exec() {
     quesion = parseInt(prompt("Câu số:")) - 1
     checkBoxArray = document.querySelectorAll('fieldset')[quesion].querySelectorAll('div>label');
@@ -40,38 +42,37 @@ async function exec() {
     //show off
     for (const currentAnswer of allPossibleAnswer) {
         clearAnswer(checkBoxArray)
-        currentAnswer.forEach(checkbox => {
-            checkbox.click();
-        });
+        currentAnswer.forEach(checkbox => checkbox.click());
         await sleep(100)
-    };
+    }
     // real check
     for (const currentAnswer of allPossibleAnswer) {
+        // reset @checkBoxArray because the page has been reloaded
         checkBoxArray = document.querySelectorAll('fieldset')[quesion].querySelectorAll('div>label');
         clearAnswer(checkBoxArray)
-        currentAnswer.forEach(checkbox => {
-            checkbox.click();
-        });
+        currentAnswer.forEach(checkbox => checkbox.click());
         await sleep(100)
-        do {
+        while (true) {
             // submit
             document.querySelectorAll('button[data-submitting="Submitting"]')[0].click()
-            console.log("submited!")
             await sleep(3000) // wait server respond
-            // TODO: check if the answer is correct
-            if (document.querySelectorAll('fieldset')[quesion].parentElement.querySelectorAll('.incorrect')[0] == undefined) {
-                // nếu trả lời đúng thì:
-                console.log("correct!");
-                break;
-            } else {
-                console.log("incorrect!");
-            }
-
-        } while (document.getElementsByClassName('notification-message')[0].innerText.trim() == "")
+            if (document.getElementsByClassName('notification-message')[0].innerText.trim() == "") break
+            console.log("please wait until next submission");
+            await sleep(intervalChecking);
+        }
+        console.log("submited!")
+        // TODO: check if the answer is correct
+        if (document.querySelectorAll('fieldset')[quesion].parentElement.querySelectorAll('.incorrect')[0] == undefined) {
+            // nếu trả lời đúng thì:
+            console.log("correct!");
+            break;
+        } else {
+            console.log("incorrect!");
+        }
         // if không bị trả về là fail - đang chờ
-        // await sleep(1000 * 60 * 10) // 10 minutes
-    };
+        await sleep(1000 * 60 * 10) // 10 minutes
+    }
     console.log("Done!");
-} adk
+}
 
-// exec();
+exec();
