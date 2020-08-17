@@ -20,9 +20,7 @@ function subset(arra, arra_size = 1) {
 
 function clearAnswer(checkboxs) {
     checkboxs.forEach(checkbox => {
-        if (checkbox.children[0].checked === true) {
-            checkbox.click()
-        }
+        if (checkbox.children[0].checked === true) checkbox.click()
     });
 }
 
@@ -33,18 +31,29 @@ function sleep(ms) {
 function getContext(question, checkBoxLength) {
     let checkBoxArray = document.querySelectorAll('fieldset')[question].querySelectorAll('div>label');
     let allPossibleAnswer = checkBoxLength === 0 ? subset(checkBoxArray) : subset(checkBoxArray).filter((e) => e.length === checkBoxLength);
-    return { checkBoxArray, allPossibleAnswer };
+    allPossibleAnswer.reverse();
+    return {checkBoxArray, allPossibleAnswer};
 }
 
 function getInput() {
     let question = parseInt(prompt("Câu số:")) - 1
     let checkBoxLength = parseInt(prompt("fixed length?")) || 0
-    return { question, checkBoxLength };
+    return {question, checkBoxLength};
+}
+
+function submitAnswer(question) {
+    let listAllSubmitButton = document.querySelectorAll('button[data-submitting="Submitting"]');
+    if (listAllSubmitButton.length === 1) {
+        //just click
+        listAllSubmitButton[0].click();
+    } else {
+        listAllSubmitButton[question].click();
+    }
 }
 
 async function exec() {
-    const { question, checkBoxLength } = getInput();
-    let { checkBoxArray, allPossibleAnswer } = getContext(question, checkBoxLength);
+    const {question, checkBoxLength} = getInput();
+    let {checkBoxArray, allPossibleAnswer} = getContext(question, checkBoxLength);
 
     //show off
     for (const currentAnswer of allPossibleAnswer) {
@@ -56,7 +65,7 @@ async function exec() {
     // real check
     const length = allPossibleAnswer.length;
     for (let i = 0; i < length; i++) {
-        let { checkBoxArray, allPossibleAnswer } = getContext(question, checkBoxLength); // renew these 2 object
+        let {checkBoxArray, allPossibleAnswer} = getContext(question, checkBoxLength); // renew these 2 object
         let currentAnswer = allPossibleAnswer[i]
         clearAnswer(checkBoxArray)
 
@@ -64,7 +73,7 @@ async function exec() {
         await sleep(100)
 
         while (true) {
-            document.querySelectorAll('button[data-submitting="Submitting"]')[0].click() // submit
+            submitAnswer(question);
             await sleep(3000) // wait server respond
             if (document.getElementsByClassName('notification-message')[0].innerText.trim() === "") break
 
