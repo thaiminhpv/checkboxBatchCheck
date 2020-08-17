@@ -1,3 +1,5 @@
+const intervalChecking = 1000 * 60;
+
 function subset(arra, arra_size = 1) {
     var result_set = [],
         result;
@@ -18,7 +20,7 @@ function subset(arra, arra_size = 1) {
 
 function clearAnswer(checkboxs) {
     checkboxs.forEach(checkbox => {
-        if (checkbox.children[0].checked == true) {
+        if (checkbox.children[0].checked === true) {
             checkbox.click()
         }
     });
@@ -28,48 +30,57 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const intervalChecking = 1000 * 60;
+function getContext(question, checkBoxLength) {
+    let checkBoxArray = document.querySelectorAll('fieldset')[question].querySelectorAll('div>label');
+    let allPossibleAnswer = checkBoxLength === 0 ? subset(checkBoxArray) : subset(checkBoxArray).filter((e) => e.length === checkBoxLength);
+    return {checkBoxArray, allPossibleAnswer};
+}
+
+function getInput() {
+    let question = parseInt(prompt("Câu số:")) - 1
+    let checkBoxLength = parseInt(prompt("fixed length?")) || 0
+    return {question, checkBoxLength};
+}
+
 async function exec() {
-    quesion = parseInt(prompt("Câu số:")) - 1
-    checkBoxArray = document.querySelectorAll('fieldset')[quesion].querySelectorAll('div>label');
-    checkBoxLengthFix = parseInt(prompt("fixed length?")) || 0
-    if (checkBoxLengthFix == 0) {
-        allPossibleAnswer = subset(checkBoxArray)
-        allPossibleAnswer = allPossibleAnswer.reverse()
-    } else {
-        allPossibleAnswer = subset(checkBoxArray).filter((e) => e.length == checkBoxLengthFix)
-    }
+    const {question, checkBoxLength} = getInput();
+    let {checkBoxArray, allPossibleAnswer} = getContext(question, checkBoxLength);
+
     //show off
     for (const currentAnswer of allPossibleAnswer) {
         clearAnswer(checkBoxArray)
         currentAnswer.forEach(checkbox => checkbox.click());
         await sleep(100)
     }
+
     // real check
-    for (const currentAnswer of allPossibleAnswer) {
-        // reset @checkBoxArray because the page has been reloaded
-        checkBoxArray = document.querySelectorAll('fieldset')[quesion].querySelectorAll('div>label');
+    const length = allPossibleAnswer.length;
+    for (let i = 0; i < length; i++) {
+        let {checkBoxArray, allPossibleAnswer} = getContext(question, checkBoxLength); // renew these 2 object
+        let currentAnswer = allPossibleAnswer[i]
         clearAnswer(checkBoxArray)
-        currentAnswer.forEach(checkbox => checkbox.click());
+
+        currentAnswer.forEach(checkbox => checkbox.click()); // select answer
         await sleep(100)
+
         while (true) {
-            // submit
-            document.querySelectorAll('button[data-submitting="Submitting"]')[0].click()
+            document.querySelectorAll('button[data-submitting="Submitting"]')[0].click() // submit
             await sleep(3000) // wait server respond
-            if (document.getElementsByClassName('notification-message')[0].innerText.trim() == "") break
+            if (document.getElementsByClassName('notification-message')[0].innerText.trim() === "") break
+
             console.log("please wait until next submission");
             await sleep(intervalChecking);
         }
+
         console.log("submited!")
-        // TODO: check if the answer is correct
-        if (document.querySelectorAll('fieldset')[quesion].parentElement.querySelectorAll('.incorrect')[0] == undefined) {
-            // nếu trả lời đúng thì:
+
+        if (document.querySelectorAll('fieldset')[question].parentElement.querySelectorAll('.incorrect')[0] === undefined) {
+            // if the answer is correct, then:
             console.log("correct!");
             break;
         } else {
             console.log("incorrect!");
         }
-        // if không bị trả về là fail - đang chờ
         await sleep(1000 * 60 * 10) // 10 minutes
     }
     console.log("Done!");
