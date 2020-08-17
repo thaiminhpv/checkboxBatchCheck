@@ -1,9 +1,9 @@
 const intervalChecking = 1000 * 60;
 
 function subset(arra, arra_size = 1) {
-    var result_set = [],
+    let result_set = [],
         result;
-    for (var x = 0; x < Math.pow(2, arra.length); x++) {
+    for (let x = 0; x < Math.pow(2, arra.length); x++) {
         result = [];
         i = arra.length - 1;
         do {
@@ -33,18 +33,18 @@ function sleep(ms) {
 function getContext(question, checkBoxLength) {
     let checkBoxArray = document.querySelectorAll('fieldset')[question].querySelectorAll('div>label');
     let allPossibleAnswer = checkBoxLength === 0 ? subset(checkBoxArray) : subset(checkBoxArray).filter((e) => e.length === checkBoxLength);
-    return {checkBoxArray, allPossibleAnswer};
+    return { checkBoxArray, allPossibleAnswer };
 }
 
 function getInput() {
     let question = parseInt(prompt("Câu số:")) - 1
     let checkBoxLength = parseInt(prompt("fixed length?")) || 0
-    return {question, checkBoxLength};
+    return { question, checkBoxLength };
 }
 
 async function exec() {
-    const {question, checkBoxLength} = getInput();
-    let {checkBoxArray, allPossibleAnswer} = getContext(question, checkBoxLength);
+    const { question, checkBoxLength } = getInput();
+    let { checkBoxArray, allPossibleAnswer } = getContext(question, checkBoxLength);
 
     //show off
     for (const currentAnswer of allPossibleAnswer) {
@@ -56,7 +56,7 @@ async function exec() {
     // real check
     const length = allPossibleAnswer.length;
     for (let i = 0; i < length; i++) {
-        let {checkBoxArray, allPossibleAnswer} = getContext(question, checkBoxLength); // renew these 2 object
+        let { checkBoxArray, allPossibleAnswer } = getContext(question, checkBoxLength); // renew these 2 object
         let currentAnswer = allPossibleAnswer[i]
         clearAnswer(checkBoxArray)
 
