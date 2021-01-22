@@ -29,7 +29,7 @@ function sleep(ms) {
 }
 
 function getContext(question, checkBoxLength) {
-    let checkBoxArray = document.querySelectorAll('fieldset')[question].querySelectorAll('div>label');
+    let checkBoxArray = document.querySelectorAll('.vert')[question+1].querySelectorAll('div>label');
     let allPossibleAnswer = checkBoxLength === 0 ? subset(checkBoxArray) : subset(checkBoxArray).filter((e) => e.length === checkBoxLength);
     allPossibleAnswer.reverse();
     return {checkBoxArray, allPossibleAnswer};
