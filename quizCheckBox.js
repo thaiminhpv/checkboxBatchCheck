@@ -83,7 +83,9 @@ async function exec() {
 
         console.log("submited!")
 
-        if (document.querySelectorAll('fieldset')[question].parentElement.querySelectorAll('.incorrect')[0] === undefined) {
+        var x = [...document.querySelectorAll('.vert')];
+        x.shift();
+        if (x[question].querySelectorAll('.incorrect')[0] === undefined) {
             // if the answer is correct, then:
             console.log("correct!");
             break;
