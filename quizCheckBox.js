@@ -29,7 +29,13 @@ function sleep(ms) {
 }
 
 function getContext(question, checkBoxLength) {
-    let checkBoxArray = document.querySelectorAll('.vert')[question+1].querySelectorAll('div>label');
+    if (document.querySelectorAll('.vert').length === 1) {
+        // one submit button
+        let checkBoxArray = document.querySelectorAll('fieldset')[question].querySelectorAll('div>label');
+    } else {
+        //multiple submit button
+        let checkBoxArray = document.querySelectorAll('.vert')[question+1].querySelectorAll('div>label');
+    }
     let allPossibleAnswer = checkBoxLength === 0 ? subset(checkBoxArray) : subset(checkBoxArray).filter((e) => e.length === checkBoxLength);
     allPossibleAnswer.reverse();
     return {checkBoxArray, allPossibleAnswer};
@@ -83,9 +89,18 @@ async function exec() {
 
         console.log("submited!")
 
-        var x = [...document.querySelectorAll('.vert')];
-        x.shift();
-        if (x[question].querySelectorAll('.incorrect')[0] === undefined) {
+        let result;
+        if (document.querySelectorAll('.vert').length === 1) {
+            // one submit button
+            result = document.querySelectorAll('fieldset')[question].parentElement.querySelectorAll('.incorrect')[0] === undefined;
+        } else {
+            //multiple submit button
+            let x = [...document.querySelectorAll('.vert')];
+            x.shift();
+            result = x[question].querySelectorAll('.incorrect')[0] === undefined;
+        }
+
+        if (result) {
             // if the answer is correct, then:
             console.log("correct!");
             break;
