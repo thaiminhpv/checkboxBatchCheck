@@ -54,7 +54,7 @@ function submitAnswer(question) {
         //just click
         listAllSubmitButton[0].click();
     } else {
-        listAllSubmitButton[question].click();
+        listAllSubmitButton[question - 1].click();
     }
 }
 
