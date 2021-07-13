@@ -59,7 +59,11 @@ function submitAnswer(question) {
 }
 
 async function exec() {
-    const {question, checkBoxLength} = getInput();
+    let {question, checkBoxLength} = getInput();
+    if (document.querySelectorAll('.vert').length !== 1) {
+        // if multiple button
+        question += 1
+    }
     let {checkBoxArray, allPossibleAnswer} = getContext(question, checkBoxLength);
 
     //show off
